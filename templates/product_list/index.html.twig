@@ -39,7 +39,7 @@
                                         </a>
                                     </h4>
                                     <p class="card-text">{{ product.price|number_format(2, ',', ' ') }} Kč</p>
-                                    <a href="{{ path('order_form_create_order', {'id': product.id}) }}" class="btn btn-primary">
+                                    <a href="{{ path('order_form_index', {'id': product.id}) }}" class="btn btn-primary">
                                         Objednat
                                     </a>
                                 </div>

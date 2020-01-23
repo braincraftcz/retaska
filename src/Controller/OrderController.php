@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Order;
-use App\Form\Order1Type;
+use App\Form\OrderType;
 use App\Repository\OrderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +31,7 @@ class OrderController extends AbstractController
     public function new(Request $request): Response
     {
         $order = new Order();
-        $form = $this->createForm(Order1Type::class, $order);
+        $form = $this->createForm(OrderType::class, $order);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -63,7 +63,7 @@ class OrderController extends AbstractController
      */
     public function edit(Request $request, Order $order): Response
     {
-        $form = $this->createForm(Order1Type::class, $order);
+        $form = $this->createForm(OrderType::class, $order);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
