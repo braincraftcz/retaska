@@ -26,11 +26,6 @@ class Order
     private $product;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $quantity;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Email(message="E-mail není ve správném formátu")
      * @Assert\NotBlank(message="Vyplňte prosím váš e-mail")
@@ -126,18 +121,6 @@ class Order
     public function setProduct(?Product $product): self
     {
         $this->product = $product;
-
-        return $this;
-    }
-
-    public function getQuantity(): ?int
-    {
-        return $this->quantity;
-    }
-
-    public function setQuantity(int $quantity): self
-    {
-        $this->quantity = $quantity;
 
         return $this;
     }
@@ -288,7 +271,7 @@ class Order
 
     public function updateTotalPrice(): void
     {
-        $this->totalPrice = $this->quantity * $this->product->getPrice();
+        $this->totalPrice = $this->product->getPrice();
 
         if ($this->delivery !== null) {
             $this->totalPrice += $this->delivery->getPrice();

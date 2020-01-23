@@ -29,7 +29,6 @@ class OrderFormController extends AbstractController
     ): Response {
         $order = new Order();
         $order->setProduct($product);
-        $order->setQuantity(1);
         $order->updateTotalPrice();
 
         $em = $this->getDoctrine()->getManager();
@@ -66,7 +65,7 @@ class OrderFormController extends AbstractController
 
             $itemsOnStock = $order->getProduct()->getStock();
 
-            if (($itemsOnStock - $order->getQuantity()) < 0) {
+            if (($itemsOnStock - 1) < 0) {
                 return $this->render('order_form/index.html.twig', [
                     'order' => $order,
                     'form' => $form->createView(),
@@ -76,7 +75,7 @@ class OrderFormController extends AbstractController
 
             $order->setCreated(new \DateTime);
             $order->setSubmitted(true);
-            $order->getProduct()->setStock($itemsOnStock - $order->getQuantity());
+            $order->getProduct()->setStock($itemsOnStock - 1);
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('order_form_confirm');
