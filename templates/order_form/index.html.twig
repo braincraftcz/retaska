@@ -20,9 +20,13 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Objednaný produkt:</h5>
-                    <p class="card-text">{{ order.product.name }}</p>
+                    <p class="card-text">
+                        {% for product in order.products %}
+                            {{ product.name }}<br>
+                        {% endfor %}
+                    </p>
                     <h5 class="card-title">Celková cena:</h5>
-                    <p class="card-text">{{ order.totalPrice|number_format(2, ',', ' ') }} Kč</p>
+                    <p class="card-text">{{ totalPrice|number_format(2, ',', ' ') }} Kč</p>
                 </div>
             </div>
         </div>

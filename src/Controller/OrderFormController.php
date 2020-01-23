@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Order;
 use App\Entity\Product;
 use App\Form\OrderFormType;
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -24,31 +26,31 @@ class OrderFormController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="order_form_index", methods="GET|POST")
+     * @Route("/", name="order_form_index", methods="GET|POST")
      */
-    public function index(Request $request, Product $product): Response
+    public function index(Request $request, SessionInterface $session, ProductRepository $repo): Response
     {
         $order = new Order;
-        $order->setProduct($product);
+
+        $basket = $session->get(BasketController::BASKET_SESSION_NAME);
+
+        $totalPrice = 0;
+
+        foreach ($basket as $id => $item) {
+            $product = $repo->find($id);
+            $order->addProduct($product);
+            $totalPrice += $product->getPrice();
+        }
 
         $form = $this->createForm(OrderFormType::class, $order);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $order->updateTotalPrice();
 
-            $itemsOnStock = $product->getStock();
-
-            if (($itemsOnStock - 1) < 0) {
-                return $this->render('order_form/index.html.twig', [
-                    'order' => $order,
-                    'form' => $form->createView(),
-                    'remainingOnStock' => $product->getStock()
-                ]);
-            }
+            $totalPrice += $order->getDelivery()->getPrice();
+            $order->setTotalPrice($totalPrice);
 
             $order->setCreated(new \DateTime);
-            $product->setStock($itemsOnStock - 1);
 
             $this->getDoctrine()->getManager()->persist($order);
             $this->getDoctrine()->getManager()->flush();
@@ -59,6 +61,7 @@ class OrderFormController extends AbstractController
         return $this->render('order_form/index.html.twig', [
             'order' => $order,
             'form' => $form->createView(),
+            'totalPrice' => $totalPrice
         ]);
     }
 }
